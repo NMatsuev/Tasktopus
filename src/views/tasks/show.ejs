@@ -1,0 +1,63 @@
+<%- include('../partials/header', { title }) %>
+<%- include('../partials/flash', { query }) %>
+
+<% const label = statuses.find((s) => s.value === task.status)?.label || task.status; %>
+
+<article class="task-card">
+  <div class="task-card-head">
+    <h1><%= task.title %></h1>
+    <span class="badge badge-<%= task.status %>"><%= label %></span>
+  </div>
+
+  <dl class="task-meta">
+    <dt>Срок выполнения</dt>
+    <dd><%= task.due_date || 'не указан' %></dd>
+    <dt>Создана</dt>
+    <dd><%= task.created_at %></dd>
+    <dt>Обновлена</dt>
+    <dd><%= task.updated_at %></dd>
+  </dl>
+
+  <% if (task.description) { %>
+    <div class="task-description"><%= task.description %></div>
+  <% } %>
+
+  <div class="form-actions">
+    <a href="/tasks/<%= task.id %>/edit" class="btn btn-secondary">Изменить</a>
+    <form method="POST" action="/tasks/<%= task.id %>" class="inline-form">
+      <input type="hidden" name="_method" value="DELETE">
+      <button type="submit" class="btn btn-danger">Удалить задачу</button>
+    </form>
+    <a href="/tasks" class="btn-text">К списку задач</a>
+  </div>
+</article>
+
+<section class="attachments">
+  <h2>Файлы</h2>
+
+  <% if (attachments.length === 0) { %>
+    <p class="empty-state">Файлов пока нет.</p>
+  <% } else { %>
+    <ul class="attachment-list">
+      <% attachments.forEach((a) => { %>
+        <li>
+          <a href="/tasks/<%= task.id %>/attachments/<%= a.id %>/download" class="file-link"><%= a.original_name %></a>
+          <span class="file-size"><%= (a.size / 1024).toFixed(1) %> КБ</span>
+          <form method="POST" action="/tasks/<%= task.id %>/attachments/<%= a.id %>" class="inline-form">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit" class="btn-text btn-text-danger">Удалить</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form method="POST" action="/tasks/<%= task.id %>/attachments" enctype="multipart/form-data" class="upload-form">
+    <label for="files">Прикрепить файл(ы)</label>
+    <input type="file" id="files" name="files" multiple required>
+    <button type="submit" class="btn btn-primary">Загрузить</button>
+    <p class="hint">Изображения, PDF, Word, Excel, txt, zip — до 10 МБ на файл.</p>
+  </form>
+</section>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,12 @@
+<%- include('../partials/header', { title: 'Ошибка сервера' }) %>
+
+<div class="error-page">
+  <h1>500 — ошибка сервера</h1>
+  <p>Что-то пошло не так при обработке запроса.</p>
+  <% if (typeof message !== 'undefined' && message) { %>
+    <pre class="error-detail"><%= message %></pre>
+  <% } %>
+  <a href="/tasks" class="btn btn-primary">К списку задач</a>
+</div>
+
+<%- include('../partials/footer') %>

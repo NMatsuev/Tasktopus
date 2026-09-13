@@ -1,0 +1,64 @@
+<%- include('../partials/header', { title }) %>
+<%- include('../partials/flash', { query }) %>
+
+<div class="page-head">
+  <h1>Список задач</h1>
+  <form method="GET" action="/tasks" class="filter-form">
+    <label for="status">Статус</label>
+    <select name="status" id="status">
+      <option value="">Все</option>
+      <% statuses.forEach((s) => { %>
+        <option value="<%= s.value %>" <%= currentStatus === s.value ? 'selected' : '' %>><%= s.label %></option>
+      <% }) %>
+    </select>
+    <button type="submit" class="btn btn-secondary">Показать</button>
+    <% if (currentStatus) { %>
+      <a href="/tasks" class="btn-text">Сбросить фильтр</a>
+    <% } %>
+  </form>
+</div>
+
+<% if (tasks.length === 0) { %>
+  <p class="empty-state">
+    <% if (currentStatus) { %>
+      Нет задач со статусом «<%= statuses.find((s) => s.value === currentStatus)?.label %>».
+    <% } else { %>
+      Задач пока нет.
+    <% } %>
+    <a href="/tasks/new">Создать задачу</a>
+  </p>
+<% } else { %>
+  <table class="ledger">
+    <thead>
+      <tr>
+        <th class="col-title">Название</th>
+        <th class="col-status">Статус</th>
+        <th class="col-date">Срок</th>
+        <th class="col-files">Файлы</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% tasks.forEach((task) => {
+        const label = statuses.find((s) => s.value === task.status)?.label || task.status;
+        const today = new Date().toISOString().slice(0, 10);
+        const overdue = task.due_date && task.status !== 'done' && task.due_date < today;
+      %>
+        <tr class="<%= overdue ? 'row-overdue' : '' %>">
+          <td class="col-title" data-label="Название"><a href="/tasks/<%= task.id %>"><%= task.title %></a></td>
+          <td class="col-status" data-label="Статус"><span class="badge badge-<%= task.status %>"><%= label %></span></td>
+          <td class="col-date" data-label="Срок">
+            <% if (task.due_date) { %>
+              <span class="<%= overdue ? 'text-overdue' : '' %>"><%= task.due_date %></span>
+              <% if (overdue) { %><span class="overdue-flag" title="Просрочено">просрочено</span><% } %>
+            <% } else { %>
+              <span class="muted">не указан</span>
+            <% } %>
+          </td>
+          <td class="col-files" data-label="Файлы"><%= task.attachments_count %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,19 @@
+<%
+  const OK_MESSAGES = {
+    created: 'Задача создана.',
+    updated: 'Задача обновлена.',
+    deleted: 'Задача удалена.',
+    file_uploaded: 'Файл(ы) загружены.',
+    file_deleted: 'Файл удалён.',
+  };
+  const ERR_MESSAGES = {
+    file_too_large: 'Файл слишком большой (проверьте лимит размера).',
+    file_rejected: 'Недопустимый тип файла.',
+  };
+%>
+<% if (typeof query !== 'undefined' && query.ok) { %>
+  <p class="flash flash-ok"><%= OK_MESSAGES[query.ok] || 'Готово.' %></p>
+<% } %>
+<% if (typeof query !== 'undefined' && query.err) { %>
+  <p class="flash flash-err"><%= ERR_MESSAGES[query.err] || 'Произошла ошибка.' %></p>
+<% } %>
